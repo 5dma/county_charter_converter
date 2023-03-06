@@ -2385,7 +2385,7 @@
 
 
 	<xsl:template match="w:p">
-		<xsl:if test="count(w:r) > 0"> <!-- Do not process empty paragraphs -->
+		<xsl:if test="count(w:r) > 0">			<!-- Do not process empty paragraphs -->
 			<xsl:variable name="para_string">
 				<xsl:for-each select="descendant::w:t">
 					<xsl:value-of select="."/>
@@ -2414,12 +2414,26 @@
 					</text:p>
 				</xsl:when>
 				<xsl:when test="starts-with($para_string,'a)')">
-					<text:list xml:id="list2567892871" text:style-name="Numbering_20_abc">
-						<text:list-item>
+					<xsl:message>List</xsl:message>
+					<xsl:message>
+						<xsl:value-of select="name()"/>
+					</xsl:message>
+					<text:list xml:id="list2567892871" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+						<xsl:variable name="entire" select=".,following-sibling::w:p"/>
+						<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'[a-z]\)'))][1]"/>
+						<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
+
+						<xsl:variable name="this_sequence" select="$entire except $junk"/>
+						<xsl:message>The entire set is <xsl:value-of select="count($entire)"/> minus  <xsl:value-of select="count($junk)"/> leaving <xsl:value-of select="count($this_sequence)"/> </xsl:message>
+
+						<xsl:for-each select="$this_sequence">
+							<text:list-item>
 							<text:p text:style-name="Numbering_20_1">
 								<xsl:apply-templates select="w:r | w:hyperlink"/>
 							</text:p>
-						</text:list-item>
+							</text:list-item>
+						</xsl:for-each>
+				
 					</text:list>
 				</xsl:when>
 				<xsl:otherwise>
@@ -2430,6 +2444,16 @@
 			</xsl:choose>
 		</xsl:if>
 	</xsl:template>
+	<xsl:template match="w:p" mode="list_item">
+		<xsl:message>List item</xsl:message>
+		<text:list-item>
+			<text:p text:style-name="Numbering_20_1">
+				<xsl:apply-templates select="w:r | w:hyperlink"/>
+			</text:p>
+		</text:list-item>
+
+	</xsl:template>
+
 	<xsl:template match="w:r">
 		<xsl:for-each select="w:t">
 			<xsl:apply-templates/>
