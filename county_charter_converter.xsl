@@ -2413,76 +2413,56 @@
 						<xsl:apply-templates select="w:r | w:hyperlink"/>
 					</text:p>
 				</xsl:when>
-				<xsl:when test="starts-with($para_string,'a)')">
-					<xsl:message>List</xsl:message>
-					<xsl:message>
-						<xsl:value-of select="name()"/>
-					</xsl:message>
-					<xsl:variable name="list_id" select="generate-id()"/>
-					<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
-						<xsl:variable name="entire" select=".,following-sibling::w:p"/>
-						<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'[a-z]\)'))][1]"/>
-						<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
+				<xsl:when test="matches($para_string,'^[a-z]\)')">
+						<xsl:if test="starts-with($para_string,'a)')">
+							<xsl:message>List</xsl:message>
+							<xsl:variable name="list_id" select="generate-id()"/>
+							<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+								<text:list-item>
+									<text:p text:style-name="Numbering_20_1">
+										<xsl:apply-templates select="w:r | w:hyperlink"/>
+									</text:p>
+								</text:list-item>
+								<xsl:variable name="entire" select="following-sibling::w:p"/>
+								<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^[a-z]\)'))][1]"/>
+								<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
 
-						<xsl:variable name="this_sequence" select="$entire except $junk"/>
-						<xsl:message>The entire set is <xsl:value-of select="count($entire)"/> minus  <xsl:value-of select="count($junk)"/> leaving <xsl:value-of select="count($this_sequence)"/> </xsl:message>
-
-						<xsl:for-each select="$this_sequence">
-							<text:list-item>
-							<text:p text:style-name="Numbering_20_1">
-								<xsl:apply-templates select="w:r | w:hyperlink"/>
-							</text:p>
-							</text:list-item>
-						</xsl:for-each>
-					</text:list>
+								<xsl:variable name="this_sequence" select="$entire except $junk"/>
+								<xsl:message>The entire set is <xsl:value-of select="count($entire)"/>
+ minus  <xsl:value-of select="count($junk)"/>
+ leaving <xsl:value-of select="count($this_sequence)"/>
+								</xsl:message>
+								<xsl:apply-templates select="$this_sequence" mode="outside"/>
+							</text:list>
+						</xsl:if>
 				</xsl:when>
-				<!-- <xsl:when test="starts-with($para_string,'(a)')">
-					<text:list xml:id="list2567892871" text:style-name="Numbering_20_abc" text:continue-numbering="false">
-						<xsl:variable name="entire" select=".,following-sibling::w:p"/>
-						<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'[a-z]\)'))][1]"/>
-						<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
-
-						<xsl:variable name="this_sequence" select="$entire except $junk"/>
-						<xsl:message>The entire set is <xsl:value-of select="count($entire)"/> minus  <xsl:value-of select="count($junk)"/> leaving <xsl:value-of select="count($this_sequence)"/> </xsl:message>
-
-						<xsl:for-each select="$this_sequence">
-							<text:list-item>
-							<text:p text:style-name="Numbering_20_1">
-								<xsl:apply-templates select="w:r | w:hyperlink"/>
-							</text:p>
-							</text:list-item>
-						</xsl:for-each>
-					</text:list>
-				</xsl:when> -->
-
-				<xsl:otherwise>
-					<text:p text:style-name="Text_20_body">
-						<xsl:apply-templates select="w:r | w:hyperlink"/>
-					</text:p>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:if>
-	</xsl:template>
-	<xsl:template match="w:p" mode="list_item">
-		<xsl:message>List item</xsl:message>
-		<text:list-item>
-			<text:p text:style-name="Numbering_20_1">
+		<xsl:otherwise>
+			<text:p text:style-name="Text_20_body">
 				<xsl:apply-templates select="w:r | w:hyperlink"/>
 			</text:p>
-		</text:list-item>
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:if>
+</xsl:template>
+<xsl:template match="w:p" mode="outside">
+	<xsl:message>outside</xsl:message>
+		<text:list-item>
+									<text:p text:style-name="Numbering_20_1">
+										<xsl:apply-templates select="w:r | w:hyperlink"/>
+									</text:p>
+								</text:list-item>
+</xsl:template>
 
-	</xsl:template>
-
-	<xsl:template match="w:r">
-		<xsl:for-each select="w:t">
-			<xsl:apply-templates/>
-		</xsl:for-each>
-		<xsl:apply-templates select="w:r"/>
-	</xsl:template>
-	<xsl:template match="w:hyperlink">
-		<xsl:apply-templates/>
-	</xsl:template>
-	<!-- <xsl:template match="w:t">
+<xsl:template match="w:r">
+<xsl:for-each select="w:t">
+	<xsl:apply-templates/>
+</xsl:for-each>
+<xsl:apply-templates select="w:r"/>
+</xsl:template>
+<xsl:template match="w:hyperlink">
+<xsl:apply-templates/>
+</xsl:template>
+<!-- <xsl:template match="w:t">
 		<xsl:choose>
 			<xsl:when test="count(.)">
 				<xsl:value-of select="substring-after(text(),')')"/>
@@ -2492,7 +2472,7 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template> -->
-	<!-- 	<xsl:template match="text()">
+<!-- 	<xsl:template match="text()">
 		<xsl:value-of select="replace(.,'&#x00A0;','')"/>
 	</xsl:template>
  -->
