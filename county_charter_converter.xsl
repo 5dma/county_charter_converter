@@ -2414,44 +2414,60 @@
 					</text:p>
 				</xsl:when>
 				<xsl:when test="matches($para_string,'^[a-z]\)')">
-						<xsl:if test="starts-with($para_string,'a)')">
-							<xsl:message>List</xsl:message>
-							<xsl:variable name="list_id" select="generate-id()"/>
-							<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
-								<text:list-item>
-									<text:p text:style-name="Numbering_20_1">
-										<xsl:apply-templates select="w:r | w:hyperlink"/>
-									</text:p>
-								</text:list-item>
-								<xsl:variable name="entire" select="following-sibling::w:p"/>
-								<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^[a-z]\)'))][1]"/>
-								<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
-
-								<xsl:variable name="this_sequence" select="$entire except $junk"/>
-								<xsl:message>The entire set is <xsl:value-of select="count($entire)"/>
- minus  <xsl:value-of select="count($junk)"/>
- leaving <xsl:value-of select="count($this_sequence)"/>
-								</xsl:message>
-								<xsl:apply-templates select="$this_sequence" mode="outside"/>
-							</text:list>
-						</xsl:if>
+					<xsl:if test="starts-with($para_string,'a)')">
+						<xsl:variable name="list_id" select="generate-id()"/>
+						<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+							<text:list-item>
+								<text:p text:style-name="Numbering_20_1">
+									<xsl:apply-templates select="w:r | w:hyperlink"/>
+								</text:p>
+							</text:list-item>
+							<xsl:variable name="entire" select="following-sibling::w:p"/>
+							<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^[a-z]\)'))][1]"/>
+							<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
+							<xsl:variable name="this_sequence" select="$entire except $junk"/>
+							<xsl:apply-templates select="$this_sequence" mode="outside"/>
+						</text:list>
+					</xsl:if>
 				</xsl:when>
-		<xsl:otherwise>
-			<text:p text:style-name="Text_20_body">
+				<xsl:when test="matches($para_string,'^\([a-z0-9A-Z]\)')">
+					<xsl:if test="matches($para_string,'^\([a1A]\)')">
+						<xsl:message>Multilevel List</xsl:message>
+						<xsl:variable name="list_id" select="generate-id()"/>
+						<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+							<text:list-item>
+								<text:p text:style-name="Numbering_20_1">
+									<xsl:apply-templates select="w:r | w:hyperlink"/>
+								</text:p>
+							
+							<xsl:variable name="entire" select="following-sibling::w:p"/>
+							<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([a-z0-9A-Z]\)'))][1]"/>
+							<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
+
+							<xsl:variable name="this_sequence" select="$entire except $junk"/>
+							<xsl:message>The entire set is <xsl:value-of select="count($entire)"/>  minus  <xsl:value-of select="count($junk)"/>  leaving <xsl:value-of select="count($this_sequence)"/> </xsl:message>
+							<xsl:apply-templates select="$this_sequence"/>
+						</text:list-item>
+						</text:list>
+					</xsl:if>
+				</xsl:when>
+
+
+				<xsl:otherwise>
+					<text:p text:style-name="Text_20_body">
+						<xsl:apply-templates select="w:r | w:hyperlink"/>
+					</text:p>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:if>
+	</xsl:template>
+	<xsl:template match="w:p" mode="outside">
+		<text:list-item>
+			<text:p text:style-name="Numbering_20_1">
 				<xsl:apply-templates select="w:r | w:hyperlink"/>
 			</text:p>
-		</xsl:otherwise>
-	</xsl:choose>
-</xsl:if>
-</xsl:template>
-<xsl:template match="w:p" mode="outside">
-	<xsl:message>outside</xsl:message>
-		<text:list-item>
-									<text:p text:style-name="Numbering_20_1">
-										<xsl:apply-templates select="w:r | w:hyperlink"/>
-									</text:p>
-								</text:list-item>
-</xsl:template>
+		</text:list-item>
+	</xsl:template>
 
 <xsl:template match="w:r">
 <xsl:for-each select="w:t">
