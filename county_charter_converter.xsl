@@ -2386,11 +2386,12 @@
 
 	<xsl:template match="w:p">
 		<xsl:if test="count(w:r) > 0">			<!-- Do not process empty paragraphs -->
-			<xsl:variable name="para_string">
+			<xsl:variable name="para_string_ugly">
 				<xsl:for-each select="descendant::w:t">
 					<xsl:value-of select="."/>
 				</xsl:for-each>
 			</xsl:variable>
+			<xsl:variable name="para_string" select="normalize-space($para_string_ugly)"/>
 			<xsl:message><xsl:value-of select="$para_string"/></xsl:message>
 			<xsl:choose>
 				<xsl:when test="starts-with($para_string,'Article ')">
@@ -2408,7 +2409,7 @@
 					</text:h>
 				</xsl:when>
 				<xsl:when test="starts-with($para_string,'Editor') or starts-with($para_string,'See County Attorney Opinion')">
-					<text:p text:style-name="Text_20_body">
+					<text:p>
 						<xsl:attribute name="text:style-name" select="'Editors_20_Note'"/>
 						<xsl:apply-templates select="w:r | w:hyperlink"/>
 					</text:p>
@@ -2479,26 +2480,6 @@
 						</xsl:for-each> 
 					</text:list>
 			</xsl:for-each-group>
-
-			<!-- <xsl:if test="matches($para_string,'^\([a1A]\)')">
-						<xsl:message>Multilevel List</xsl:message>
-						<xsl:variable name="list_id" select="generate-id()"/>
-						<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
-							<text:list-item>
-								<text:p text:style-name="Numbering_20_1">
-									<xsl:apply-templates select="w:r | w:hyperlink"/>
-								</text:p>
-							
-							<xsl:variable name="entire" select="following-sibling::w:p"/>
-							<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([a-z0-9A-Z]\)'))][1]"/>
-							<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
-
-							<xsl:variable name="this_sequence" select="$entire except $junk"/>
-							<xsl:message>The entire set is <xsl:value-of select="count($entire)"/>  minus  <xsl:value-of select="count($junk)"/>  leaving <xsl:value-of select="count($this_sequence)"/> </xsl:message>
-							<xsl:apply-templates select="$this_sequence"/>
-						</text:list-item>
-						</text:list>
-					</xsl:if> -->
 		</xsl:when>
 
 
