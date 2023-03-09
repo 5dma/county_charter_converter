@@ -2392,9 +2392,9 @@
 				</xsl:for-each>
 			</xsl:variable>
 			<xsl:variable name="para_string" select="normalize-space($para_string_ugly)"/>
-			<xsl:message>
+<!-- 			<xsl:message>
 				<xsl:value-of select="$para_string"/>
-			</xsl:message>
+			</xsl:message> -->
 			<xsl:choose>
 				<xsl:when test="starts-with($para_string,'Article ')">
 					<text:h text:style-name="Text_20_body">
@@ -2436,7 +2436,7 @@
 				</xsl:when>
 				<xsl:when test="matches($para_string,'^\([b-z1-9A-Z]\)')">
 					<!-- Prevents processing of numbered paragraphs (b), (1), and (A), as these are addressed by the recursion. -->
-					<xsl:message>Found Duplicate Internal List Item</xsl:message>
+<!-- 					<xsl:message>Found Duplicate Internal List Item</xsl:message> -->
 				</xsl:when>
 				<xsl:when test="starts-with($para_string,'(a)')">
 					<xsl:call-template name="build_list">
