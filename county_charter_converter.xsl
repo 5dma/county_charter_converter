@@ -2536,18 +2536,19 @@
 <xsl:template match="w:hyperlink">
 <xsl:apply-templates/>
 </xsl:template>
-<!-- <xsl:template match="w:t">
-		<xsl:choose>
-			<xsl:when test="count(.)">
-				<xsl:value-of select="substring-after(text(),')')"/>
-			</xsl:when>
-			<xsl:otherwise test="">
-				<xsl:value-of select="text()"/>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template> -->
+
  	<xsl:template match="text()">
-		<xsl:value-of select="replace(.,'&#x0A;','')"/>
+	<!-- Removes extraneous newlines appearing in a Word w:t node. Also, if this is the first w:t inside a w:r, and it starts with a numbering sequence (such as a), 1), or A), then remove that numbering sequence. The style in LibreOffice applies the automatic numbering sequence. -->
+		<xsl:variable name="clean_string" select="replace(.,'&#x0A;','')"/>
+
+		<xsl:choose>
+		<xsl:when test="count(parent::w:t/parent::w:r/following-sibling::w:r = 0) and matches(.,'^\(?[a-z0-9A-Z]\)')">
+			<xsl:value-of select="replace($clean_string,'^\(?[a-z0-9A-Z]\)','')"/>
+		</xsl:when>
+		<xsl:otherwise>
+		<xsl:value-of select="$clean_string"/>
+		</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
 
