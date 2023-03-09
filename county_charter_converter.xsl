@@ -2391,7 +2391,7 @@
 					<xsl:value-of select="."/>
 				</xsl:for-each>
 			</xsl:variable>
-			<!-- <xsl:message><xsl:value-of select="$para_string"/></xsl:message> -->
+			<xsl:message><xsl:value-of select="$para_string"/></xsl:message>
 			<xsl:choose>
 				<xsl:when test="starts-with($para_string,'Article ')">
 					<text:h text:style-name="Text_20_body">
@@ -2414,6 +2414,7 @@
 					</text:p>
 				</xsl:when>
 				<xsl:when test="matches($para_string,'^[a-z]\)')">
+
 					<xsl:if test="starts-with($para_string,'a)')">
 						<xsl:variable name="list_id" select="generate-id()"/>
 						<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
@@ -2430,8 +2431,56 @@
 						</text:list>
 					</xsl:if>
 				</xsl:when>
-				<xsl:when test="matches($para_string,'^\([a-z0-9A-Z]\)')">
-					<xsl:if test="matches($para_string,'^\([a1A]\)')">
+				<xsl:when test="matches($para_string,'^\([b-z1-9A-Z]\)')">
+					<xsl:message>Found Duplicate Internal List Item</xsl:message>
+				</xsl:when>
+				<xsl:when test="starts-with($para_string,'(a)')">
+					<xsl:message>The first string in a level 1 is <xsl:value-of select="$para_string"/></xsl:message>
+					<xsl:variable name="entire" select=".,following-sibling::w:p"/>
+					<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([a-z0-9A-Z]\)'))][1]"/>
+					<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
+					<xsl:variable name="this_sequence" select="$entire except $junk"/>
+					<xsl:message>The entire set is <xsl:value-of select="count($entire)"/> minus  <xsl:value-of select="count($junk)"/> leaving <xsl:value-of select="count($this_sequence)"/></xsl:message>
+			<xsl:for-each-group select="$this_sequence" group-by="'^\([a-z]\)'">
+				<xsl:message>The current level 1 group is <xsl:value-of select="current-group()"/></xsl:message>
+									<xsl:message>The current level 1 group-key is <xsl:value-of select="current-grouping-key()"/></xsl:message>
+				<xsl:variable name="list_id" select="generate-id()"/>
+				<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+					<xsl:for-each select="current-group()">
+						<xsl:if test="matches(w:r[1]/w:t[1],'^\([a-z]\)')">
+							<xsl:message>The sentence in level 1 group is <xsl:value-of select="."/></xsl:message>
+							<text:list-item>
+								<text:p text:style-name="Numbering_20_1">
+									<xsl:apply-templates select="w:r | w:hyperlink"/>
+								</text:p>
+								<xsl:if test="starts-with(following-sibling::w:p/w:r[1]/w:t[1],'(1)')">
+									<xsl:variable name="entire_2" select="following-sibling::w:p"/>
+									<xsl:variable name="first_junk_2" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([0-9A-Z]\)'))][1]"/>
+									<xsl:variable name="junk_2" select="$first_junk_2, $first_junk_2/following-sibling::w:p"/>
+									<xsl:variable name="this_sequence_2" select="$entire_2 except $junk_2"/>
+									<xsl:message>The first junk starts with <xsl:value-of select="$first_junk_2/w:r[1]/w:t[1]"/></xsl:message>
+									<xsl:message>The entire level 2 set is <xsl:value-of select="count($entire_2)"/> minus  <xsl:value-of select="count($junk_2)"/> leaving <xsl:value-of select="count($this_sequence_2)"/></xsl:message>
+									<xsl:for-each-group select="$this_sequence_2" group-by="'^\([1-9]\)'">
+										<xsl:variable name="list_id_2" select="generate-id()"/>
+										<text:list xml:id="{$list_id_2}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+										<xsl:for-each select="current-group()">
+											<xsl:message>The sentence in level 2 group is <xsl:value-of select="."/></xsl:message>
+											<text:list-item>
+												<text:p text:style-name="Numbering_20_1">
+													<xsl:apply-templates select="w:r | w:hyperlink"/>
+												</text:p>	
+											</text:list-item>
+										</xsl:for-each> 
+										</text:list>
+									</xsl:for-each-group>
+								</xsl:if>
+							</text:list-item>
+						</xsl:if>					
+						</xsl:for-each> 
+					</text:list>
+			</xsl:for-each-group>
+
+			<!-- <xsl:if test="matches($para_string,'^\([a1A]\)')">
 						<xsl:message>Multilevel List</xsl:message>
 						<xsl:variable name="list_id" select="generate-id()"/>
 						<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
@@ -2449,25 +2498,25 @@
 							<xsl:apply-templates select="$this_sequence"/>
 						</text:list-item>
 						</text:list>
-					</xsl:if>
-				</xsl:when>
+					</xsl:if> -->
+		</xsl:when>
 
 
-				<xsl:otherwise>
-					<text:p text:style-name="Text_20_body">
-						<xsl:apply-templates select="w:r | w:hyperlink"/>
-					</text:p>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:if>
-	</xsl:template>
-	<xsl:template match="w:p" mode="outside">
-		<text:list-item>
-			<text:p text:style-name="Numbering_20_1">
+		<xsl:otherwise>
+			<text:p text:style-name="Text_20_body">
 				<xsl:apply-templates select="w:r | w:hyperlink"/>
 			</text:p>
-		</text:list-item>
-	</xsl:template>
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:if>
+</xsl:template>
+<xsl:template match="w:p" mode="outside">
+<text:list-item>
+	<text:p text:style-name="Numbering_20_1">
+		<xsl:apply-templates select="w:r | w:hyperlink"/>
+	</text:p>
+</text:list-item>
+</xsl:template>
 
 <xsl:template match="w:r">
 <xsl:for-each select="w:t">
