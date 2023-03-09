@@ -2499,12 +2499,12 @@
 </text:list-item>
 </xsl:template>
 
-<xsl:template match="w:r">
-<xsl:for-each select="w:t">
-	<xsl:apply-templates/>
-</xsl:for-each>
-<xsl:apply-templates select="w:r"/>
-</xsl:template>
+	<xsl:template match="w:r">
+	<!-- 	<xsl:for-each select="w:t">
+			<xsl:apply-templates/>
+		</xsl:for-each> -->
+		<xsl:apply-templates/>
+	</xsl:template>
 <xsl:template match="w:hyperlink">
 <xsl:apply-templates/>
 </xsl:template>
@@ -2518,9 +2518,8 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template> -->
-<!-- 	<xsl:template match="text()">
-		<xsl:value-of select="replace(.,'&#x00A0;','')"/>
+ 	<xsl:template match="text()">
+		<xsl:value-of select="replace(.,'&#x0A;','')"/>
 	</xsl:template>
- -->
 </xsl:stylesheet>
 
