@@ -2465,12 +2465,40 @@
 										<xsl:variable name="list_id_2" select="generate-id()"/>
 										<text:list xml:id="{$list_id_2}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
 										<xsl:for-each select="current-group()">
+										<xsl:if test="matches(w:r[1]/w:t[1],'^\([0-9]\)')">
 											<xsl:message>The sentence in level 2 group is <xsl:value-of select="."/></xsl:message>
 											<text:list-item>
 												<text:p text:style-name="Numbering_20_1">
 													<xsl:apply-templates select="w:r | w:hyperlink"/>
-												</text:p>	
+												</text:p>
+
+												<xsl:if test="starts-with(following-sibling::w:p/w:r[1]/w:t[1],'(A)')">
+													<xsl:variable name="entire_3" select="following-sibling::w:p"/>
+													<xsl:variable name="first_junk_3" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([A-Z]\)'))][1]"/>
+													<xsl:variable name="junk_3" select="$first_junk_3, $first_junk_3/following-sibling::w:p"/>
+													<xsl:variable name="this_sequence_3" select="$entire_3 except $junk_3"/>
+													<xsl:message>The third junk starts with <xsl:value-of select="$first_junk_3/w:r[1]/w:t[1]"/></xsl:message>
+													<xsl:message>The entire level 3 set is <xsl:value-of select="count($entire_3)"/> minus  <xsl:value-of select="count($junk_3)"/> leaving <xsl:value-of select="count($this_sequence_3)"/></xsl:message>
+													<xsl:for-each-group select="$this_sequence_3" group-by="'^\([A-Z]\)'">
+														<xsl:variable name="list_id_3" select="generate-id()"/>
+														<text:list xml:id="{$list_id_3}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+														<xsl:for-each select="current-group()">
+															<xsl:message>The sentence in level 3 group is <xsl:value-of select="."/></xsl:message>
+															<text:list-item>
+																<text:p text:style-name="Numbering_20_1">
+																	<xsl:apply-templates select="w:r | w:hyperlink"/>
+																</text:p>	
+															</text:list-item>
+														</xsl:for-each> 
+														</text:list>
+													</xsl:for-each-group>
+												</xsl:if>
+
+
+
+
 											</text:list-item>
+											</xsl:if>
 										</xsl:for-each> 
 										</text:list>
 									</xsl:for-each-group>
