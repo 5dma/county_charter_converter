@@ -2473,25 +2473,11 @@
 												</text:p>
 
 												<xsl:if test="starts-with(following-sibling::w:p/w:r[1]/w:t[1],'(A)')">
-													<xsl:variable name="entire_3" select="following-sibling::w:p"/>
-													<xsl:variable name="first_junk_3" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([A-Z]\)'))][1]"/>
-													<xsl:variable name="junk_3" select="$first_junk_3, $first_junk_3/following-sibling::w:p"/>
-													<xsl:variable name="this_sequence_3" select="$entire_3 except $junk_3"/>
-													<xsl:message>The third junk starts with <xsl:value-of select="$first_junk_3/w:r[1]/w:t[1]"/></xsl:message>
-													<xsl:message>The entire level 3 set is <xsl:value-of select="count($entire_3)"/> minus  <xsl:value-of select="count($junk_3)"/> leaving <xsl:value-of select="count($this_sequence_3)"/></xsl:message>
-													<xsl:for-each-group select="$this_sequence_3" group-by="'^\([A-Z]\)'">
-														<xsl:variable name="list_id_3" select="generate-id()"/>
-														<text:list xml:id="{$list_id_3}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
-														<xsl:for-each select="current-group()">
-															<xsl:message>The sentence in level 3 group is <xsl:value-of select="."/></xsl:message>
-															<text:list-item>
-																<text:p text:style-name="Numbering_20_1">
-																	<xsl:apply-templates select="w:r | w:hyperlink"/>
-																</text:p>	
-															</text:list-item>
-														</xsl:for-each> 
-														</text:list>
-													</xsl:for-each-group>
+
+													<xsl:call-template name="build_list">
+														<xsl:with-param name="first_item" select="following-sibling::w:p[1]"/>
+													</xsl:call-template>
+													
 												</xsl:if>
 
 
@@ -2519,6 +2505,33 @@
 	</xsl:choose>
 </xsl:if>
 </xsl:template>
+
+
+<xsl:template name="build_list">
+	<xsl:param name="first_item"/>
+
+	<xsl:variable name="entire" select="following-sibling::w:p"/>
+	<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],'^\([A-Z]\)'))][1]"/>
+	<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
+	<xsl:variable name="this_sequence" select="$entire except $junk"/>
+	<xsl:message>The third junk starts with <xsl:value-of select="$first_junk/w:r[1]/w:t[1]"/></xsl:message>
+	<xsl:message>The entire level 3 set is <xsl:value-of select="count($entire)"/> minus  <xsl:value-of select="count($junk)"/> leaving <xsl:value-of select="count($this_sequence)"/></xsl:message>
+	<xsl:for-each-group select="$this_sequence" group-by="'^\([A-Z]\)'">
+		<xsl:variable name="list_id" select="generate-id()"/>
+		<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
+		<xsl:for-each select="current-group()">
+			<xsl:message>The sentence in level 3 group is <xsl:value-of select="."/></xsl:message>
+			<text:list-item>
+				<text:p text:style-name="Numbering_20_1">
+					<xsl:apply-templates select="w:r | w:hyperlink"/>
+				</text:p>	
+			</text:list-item>
+		</xsl:for-each> 
+		</text:list>
+	</xsl:for-each-group>
+
+</xsl:template>
+
 <xsl:template match="w:p" mode="outside">
 <text:list-item>
 	<text:p text:style-name="Numbering_20_1">
@@ -2528,9 +2541,6 @@
 </xsl:template>
 
 	<xsl:template match="w:r">
-	<!-- 	<xsl:for-each select="w:t">
-			<xsl:apply-templates/>
-		</xsl:for-each> -->
 		<xsl:apply-templates/>
 	</xsl:template>
 <xsl:template match="w:hyperlink">
