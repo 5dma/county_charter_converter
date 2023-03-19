@@ -52,7 +52,7 @@
 				<xsl:value-of select="$para_string"/>
 			</xsl:message> -->
 			<xsl:choose>
-				<xsl:when test="starts-with($para_string,'Article ')">
+				<xsl:when test="starts-with($para_string,'Article ') or starts-with($para_string,'Preamble')">
 					<text:h text:style-name="Text_20_body">
 						<xsl:attribute name="text:style-name" select="'Heading_20_1'"/>
 						<xsl:attribute name="text:outline-level" select="'1'"/>
