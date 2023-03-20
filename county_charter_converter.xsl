@@ -93,6 +93,28 @@
 				<xsl:when test="$para_string = 'Class'">
 					<xsl:call-template name="fine_table"/>
 				</xsl:when>
+				<xsl:when test="$para_string = 'Criminal Violation' or 
+						$para_string = 'Civil ViolationMaximum Penalty' or
+						$para_string = 'MaximumFine' or
+						$para_string = 'MaximumJail Term' or
+						$para_string = 'InitialOffense' or
+						$para_string = 'RepeatOffense' or
+						$para_string = 'A' or
+						$para_string = '$1000' or
+						$para_string = '6 months' or
+						$para_string = '$500' or
+						$para_string = '$750' or
+						$para_string = 'B' or
+						$para_string = '$200' or
+						$para_string = '30 days' or
+						$para_string = '$100' or
+						$para_string = '$150' or
+						$para_string = 'C' or
+						$para_string = '$50' or
+						$para_string = 'None if fine is paid; 10 days otherwise' or
+						$para_string = '$75'">
+				</xsl:when>
+
 				<xsl:when test="matches($para_string,'^[a-z]\)')">
 					<!-- This is a special case of numbering. There is only one single-level list that is numbered a), b), c), d). All the other lists have open and close parens (a), (b), (c), etc. -->
 					<xsl:if test="starts-with($para_string,'a)')">
