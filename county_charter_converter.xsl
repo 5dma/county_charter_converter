@@ -23,6 +23,24 @@
 				<style:font-face style:name="Liberation Serif" svg:font-family="&apos;Liberation Serif&apos;" style:font-family-generic="roman" style:font-pitch="variable"/>
 			</office:font-face-decls>
 			<office:automatic-styles>
+				<style:style style:name="Table1" style:family="table">
+					<style:table-properties style:width="6.5in" table:align="margins" style:writing-mode="lr-tb"/>
+				</style:style>
+				<style:style style:name="Table1.A1" style:family="table-cell">
+					<style:table-cell-properties fo:padding="0.0201in" fo:border-left="0.5pt solid #000000" fo:border-right="none" fo:border-top="0.5pt solid #000000" fo:border-bottom="0.5pt solid #000000" style:writing-mode="page"/>
+				</style:style>
+				<style:style style:name="Table1.D1" style:family="table-cell">
+					<style:table-cell-properties fo:padding="0.0201in" fo:border="0.5pt solid #000000" style:writing-mode="page"/>
+				</style:style>
+				<style:style style:name="Table1.A2" style:family="table-cell">
+					<style:table-cell-properties fo:padding="0.0201in" fo:border-left="0.5pt solid #000000" fo:border-right="none" fo:border-top="none" fo:border-bottom="0.5pt solid #000000" style:writing-mode="page"/>
+				</style:style>
+				<style:style style:name="Table1.E2" style:family="table-cell">
+					<style:table-cell-properties fo:padding="0.0201in" fo:border-left="0.5pt solid #000000" fo:border-right="0.5pt solid #000000" fo:border-top="none" fo:border-bottom="0.5pt solid #000000" style:writing-mode="page"/>
+				</style:style>
+				<style:style style:name="P3" style:family="paragraph" style:parent-style-name="Table_20_Contents">
+					<style:paragraph-properties fo:text-align="center" style:justify-single-word="false"/>
+				</style:style>
 			</office:automatic-styles>
 			<office:body>
 				<text:sequence-decls>
@@ -71,6 +89,9 @@
 						<xsl:attribute name="text:style-name" select="'Editors_20_Note'"/>
 						<xsl:apply-templates select="w:r | w:hyperlink"/>
 					</text:p>
+				</xsl:when>
+				<xsl:when test="$para_string = 'Class'">
+					<xsl:call-template name="fine_table"/>
 				</xsl:when>
 				<xsl:when test="matches($para_string,'^[a-z]\)')">
 					<!-- This is a special case of numbering. There is only one single-level list that is numbered a), b), c), d). All the other lists have open and close parens (a), (b), (c), etc. -->
@@ -199,6 +220,95 @@
 				<xsl:value-of select="$clean_string"/>
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="fine_table">
+		<table:table table:name="Fine Table" table:style-name="Table1">
+			<table:table-column table:style-name="Table1.A" table:number-columns-repeated="5"/>
+			<table:table-header-rows>
+				<table:table-row>
+					<table:table-cell table:style-name="Table1.A1" table:number-rows-spanned="2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading"/>
+						<text:p text:style-name="Table_20_Heading">Class</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="Table1.A1" table:number-columns-spanned="2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading">Criminal Violation</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+					<table:table-cell table:style-name="Table1.D1" table:number-columns-spanned="2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading">Civil Violation
+							<text:line-break/>Maximum Penalty
+						</text:p>
+					</table:table-cell>
+					<table:covered-table-cell/>
+				</table:table-row>
+				<table:table-row>
+					<table:covered-table-cell table:style-name="Table1.A2"/>
+					<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading">Maximum Fine</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading">Maximum Jail Term</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading">Initial Offense</text:p>
+					</table:table-cell>
+					<table:table-cell table:style-name="Table1.E2" office:value-type="string">
+						<text:p text:style-name="Table_20_Heading">Repeat Offense</text:p>
+					</table:table-cell>
+				</table:table-row>
+			</table:table-header-rows>
+			<table:table-row>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">A</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">$1000</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">6 months</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">$500</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.E2" office:value-type="string">
+					<text:p text:style-name="P3">$750</text:p>
+				</table:table-cell>
+			</table:table-row>
+			<table:table-row>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">B</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">$200</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">30 days</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">$100</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.E2" office:value-type="string">
+					<text:p text:style-name="P3">$150</text:p>
+				</table:table-cell>
+			</table:table-row>
+			<table:table-row>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">C</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">$50</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">None if fine is paid; 10 days otherwise</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.A2" office:value-type="string">
+					<text:p text:style-name="P3">$50</text:p>
+				</table:table-cell>
+				<table:table-cell table:style-name="Table1.E2" office:value-type="string">
+					<text:p text:style-name="P3">$75</text:p>
+				</table:table-cell>
+			</table:table-row>
+		</table:table>
 	</xsl:template>
 </xsl:stylesheet>
 
