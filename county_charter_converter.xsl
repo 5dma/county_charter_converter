@@ -169,12 +169,6 @@
 		<xsl:variable name="first_junk" select="following-sibling::w:p[not(matches(w:r[1]/w:t[1],$regex_list_end))][1]"/>
 		<xsl:variable name="junk" select="$first_junk, $first_junk/following-sibling::w:p"/>
 		<xsl:variable name="this_sequence" select="$entire except $junk"/>
-		<!-- <xsl:message>The third junk starts with <xsl:value-of select="$first_junk/w:r[1]/w:t[1]"/>
-		</xsl:message>
-		<xsl:message>The entire level 3 set is <xsl:value-of select="count($entire)"/>
- minus  <xsl:value-of select="count($junk)"/>
- leaving <xsl:value-of select="count($this_sequence)"/>
-</xsl:message> -->
 		<xsl:for-each-group select="$this_sequence" group-by="$regex_group_by">
 			<xsl:variable name="list_id" select="generate-id()"/>
 			<text:list xml:id="{$list_id}" text:style-name="Numbering_20_abc" text:continue-numbering="false">
