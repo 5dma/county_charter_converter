@@ -11,7 +11,7 @@ then rm -rf $DIRECTORY
 fi
 
 mkdir $DIRECTORY
-unzip -j /tmp/montgomerycounty-md-2.docx word/document.xml -d $DIRECTORY
+unzip -j /home/abba/programming/xsl_stylesheets/county_charter_converter/source_files/montgomerycounty-md.docx word/document.xml -d $DIRECTORY
 
 retVal=$?
 if [ $retVal -ne 0 ]; then

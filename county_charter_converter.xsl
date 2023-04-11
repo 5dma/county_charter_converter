@@ -6,8 +6,11 @@
 	xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 	xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
 	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+	xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
 	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0">
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+	xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0">
 	<xsl:output method="xml" encoding="utf8" omit-xml-declaration="no" indent="yes"/>
 
 	<xsl:template match="/">
@@ -41,6 +44,9 @@
 				<style:style style:name="P3" style:family="paragraph" style:parent-style-name="Table_20_Contents">
 					<style:paragraph-properties fo:text-align="center" style:justify-single-word="false"/>
 				</style:style>
+				<style:style style:name="fr1" style:family="graphic" style:parent-style-name="Graphics">
+					<style:graphic-properties style:wrap="none" style:vertical-pos="top" style:vertical-rel="paragraph" style:horizontal-pos="center" style:horizontal-rel="paragraph" style:mirror="none" fo:clip="rect(0in, 0in, 0in, 0in)" draw:luminance="0%" draw:contrast="0%" draw:red="0%" draw:green="0%" draw:blue="0%" draw:gamma="100%" draw:color-inversion="false" draw:image-opacity="100%" draw:color-mode="standard" draw:wrap-influence-on-position="once-concurrent" loext:allow-overlap="true"/>
+				</style:style>
 			</office:automatic-styles>
 			<office:body>
 				<text:sequence-decls>
@@ -57,6 +63,24 @@
 		</office:document-content>
 	</xsl:template>
 
+
+	<xsl:template match="w:tbl">
+		<table:table table:name="OMG" table:style-name="Table1">
+		<table:table-column table:style-name="Table1.A" table:number-columns-repeated="2"/>
+
+			<xsl:apply-templates/>
+		</table:table>
+	</xsl:template>
+	<xsl:template match="w:tr">
+		<table:table-row>
+			<xsl:apply-templates/>
+		</table:table-row>
+	</xsl:template>
+	<xsl:template match="w:tc">
+		<table:table-cell>
+			<xsl:apply-templates/>
+		</table:table-cell>
+	</xsl:template>
 
 	<xsl:template match="w:p">
 		<xsl:if test="count(w:r) > 0">			<!-- Do not process empty paragraphs -->
@@ -145,14 +169,36 @@
 						<xsl:with-param name="regex_level_filter" select="'^\([a-z]\)'"/>
 						<xsl:with-param name="next_level_flag" select="'(1)'"/>
 					</xsl:call-template>
+					<xsl:if test="starts-with($para_string,'(a)Picture of the county coat of arms')">
+						<text:p text:style-name="P1">
+							<draw:frame draw:style-name="fr1" draw:name="Coat of arms" text:anchor-type="paragraph" svg:width="3.5252in" svg:height="3.2917in" draw:z-index="0">
+								<draw:image xlink:href="Pictures/10000000000001A70000018B5221D685491B38E0.jpg" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad" draw:mime-type="image/jpeg"/>
+							</draw:frame> 
+						</text:p>
+					</xsl:if>
 
 				</xsl:when>
-
-
 				<xsl:otherwise>
 					<text:p text:style-name="Text_20_body">
 						<xsl:apply-templates select="w:r | w:hyperlink"/>
 					</text:p>
+					<xsl:choose>
+						<!-- Add graphics after specific paragraphs. -->
+						<xsl:when test="starts-with($para_string,'The colors of the county flag are the same as the colors')">
+							<text:p text:style-name="P1">
+								<draw:frame draw:style-name="fr1" draw:name="County flag" text:anchor-type="paragraph" svg:width="3.0925in" svg:height="1.9425in" draw:z-index="0">
+									<draw:image xlink:href="Pictures/1000000000000173000000E94F520AC7D8A92BAF.jpg" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad" draw:mime-type="image/jpeg"/>
+								</draw:frame> 
+							</text:p>
+						</xsl:when>
+						<xsl:when test="starts-with($para_string,'The shield in the county seal contains the same colors')">
+							<text:p text:style-name="P1">
+								<draw:frame draw:style-name="fr1" draw:name="County flag" text:anchor-type="paragraph" svg:width="2.05in" svg:height="2.07in" draw:z-index="0">
+									<draw:image xlink:href="Pictures/10000000000000F6000000F9D2417B914C67DFB6.jpg" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad" draw:mime-type="image/jpeg"/>
+								</draw:frame> 
+							</text:p>
+						</xsl:when>
+					</xsl:choose>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:if>
